@@ -87,7 +87,7 @@ function Notifications(props) {
                 setLoading(false)
             })
         }).catch((err)=>{
-            alert(err)
+            alert("Cannot accept more player")
             onClose()
             setLoading(false)
         })
@@ -121,7 +121,7 @@ function Notifications(props) {
             })
         }).catch((err)=>{
             console.log(err)
-            alert("Cannot accept more player")
+            alert("Error try again")
             setLoading(false)
             onClose()
         })

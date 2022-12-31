@@ -29,7 +29,7 @@ function MyEvent() {
             console.log(err)
             setLoading(false)
         })
-    },[])
+    },[state])
 
     if(loading===true){
        return <Loader/>

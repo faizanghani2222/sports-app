@@ -1,13 +1,15 @@
 import {Box, Heading, Input, Select, useToast } from '@chakra-ui/react';
 import axios from 'axios';
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { refreshState } from '../Store/User/user.actions';
 import Loader from './Loader';
 
 function CreateEvent() {
 
     const [data,setData]=useState({})
     const [loading,setLoading]=useState(false);
+    const dispatch=useDispatch()
    const state=useSelector((store)=>store.User)
     const toast = useToast()
 
@@ -41,6 +43,7 @@ function CreateEvent() {
                 duration: 5000,
                 isClosable: true,
               })
+              dispatch(refreshState(data.username))
               setLoading(false)
         }).catch((err)=>{
             setLoading(false)
