@@ -13,21 +13,26 @@ app.post("/join",async(req,res)=>{
         const userverify=jwt.verify(token,secretkey)
         const username=data.username
         let user=await User.findOne({username:userverify.username})
+        let event=await Event.findOne({_id:data.id})
         let orgainzer=await User.findOne({username})
-        if(!orgainzer){
-            res.status(401).send({message:"user not found"})
+        if(!orgainzer || !event || userverify.username===username){
+            res.status(401).send({message:"error try again"})
         }
+      else{
         const ndata={
             username:user.username,
             message:`${user.username} wants to join ${data.event}`,
             requestid:user.events.length,
-            timing:data.timing
+            timing:data.timing,
+            name:data.event,
+            id:data.id
         }
         orgainzer.notification.push(ndata)
         orgainzer=await orgainzer.save()
 
         const edata={
             name:data.event,
+            id:data.id,
             timing:data.eventtiming,
             status:"pending"
         }
@@ -35,6 +40,7 @@ app.post("/join",async(req,res)=>{
         user=await user.save()
 
         res.send({message:"Request send successfully"})
+      }
     }catch(e){
         res.status(401).send({message:"Request Failed try agin",error:e})
     }
@@ -57,14 +63,14 @@ app.post("/addplayer",async(req,res)=>{
     try{
         const {token,data}=req.body
         const organizerverify=jwt.verify(token,secretkey)
-        let name=data.name
+        let id=data.id
         let username=data.username
-        let event=await Event.findOne({name})
+        let event=await Event.findOne({_id:id})
         let user=await User.findOne({username})
         if(event.limit<=event.players.length){
             res.status(401).send({message:"No more players allowed in the event"})
         }
-        else if(data.timing>event.timing){
+        else if(data.timing<event.timing){
             res.status(401).send({message:"Request Expired"})
         }
         else{
@@ -81,6 +87,28 @@ app.post("/addplayer",async(req,res)=>{
         res.status(401).send({message:"Failed to add player try again!",error:e})
     }
 })
+
+
+app.post("/rejplayer",async(req,res)=>{
+    try{
+        const {token,data}=req.body
+        const organizerverify=jwt.verify(token,secretkey)
+        let id=data.id
+        let username=data.username
+        let user=await User.findOne({username})
+        
+            let temp=user
+            temp.events[data.requestid].status="rejected"
+            let u=await User.findOneAndUpdate({username},temp)
+            u=await u.save()
+            res.send(u)
+        
+    }catch(e){
+        console.log(e)
+        res.status(401).send({message:"Failed to add player try again!",error:e})
+    }
+})
+
 
 app.get("/",async(req,res)=>{
     try{

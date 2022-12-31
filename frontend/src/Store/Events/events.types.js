@@ -1,0 +1,2 @@
+export const SAVE_EVENT_DETAIL="SAVE_EVENT_DETAIL"
+

@@ -42,4 +42,32 @@ app.post("/login", async(req,res)=>{
     }
 })
 
+app.patch("/:username",async(req,res)=>{
+    try{
+        let {username}=req.params
+        let d=req.body
+        let user=await User.findOne({username})
+       let u= user.notification.filter((el)=>{
+        return el.id!==d.id
+        })
+        user.notification=u;
+        user=await user.save()
+        res.send(user)
+    }catch(e){
+        res.status(401).send({message:"failed",error:e})
+    }
+})
+
+app.get("/:username", async(req,res)=>{
+    try{
+        const {username}=req.params
+       let user=await User.findOne({username},{password: 0})
+        res.send(user)
+    }catch(e){
+        res.status(401).send({message:"failed",error:e})
+    }
+})
+
+
+
 module.exports=app
